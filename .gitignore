@@ -35,4 +35,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+<<<<<<< HEAD
 .next
+=======
+.next
+node_modules
+./node_modules
+>>>>>>> main
