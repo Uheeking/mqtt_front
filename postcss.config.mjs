@@ -6,7 +6,3 @@ const config = {
 };
 
 export default config;
-<<<<<<< HEAD
-=======
-
->>>>>>> main

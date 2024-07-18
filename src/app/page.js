@@ -23,7 +23,9 @@ export default function Home() {
             <LineChartComponent className="w-full aspect-[4/3]" title={chart.title} range={chart.range} data={chart.data} />
           </div>
         ))}
+        
       </main>
+
     </div>
   );
 }
