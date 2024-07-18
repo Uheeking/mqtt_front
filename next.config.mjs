@@ -2,7 +2,3 @@
 const nextConfig = {};
 
 export default nextConfig;
-<<<<<<< HEAD
-=======
-
->>>>>>> main
