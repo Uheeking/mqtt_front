@@ -14,12 +14,9 @@ export default function Home() {
     { title: "조도측정", range: "0~200K Lux, 14%", data: generateData(0, 200000, 6) },
   ];
 
-  
+
   return (
     <div className="flex flex-col items-center w-full min-h-screen p-4">
-      {/* <header className="w-full py-4 text-center border-b">
-        <h1 className="text-xl font-bold">실내 모니터링</h1>
-      </header> */}
       <main className="flex flex-wrap justify-center w-full gap-4 mt-4">
         {chartDetails.map((chart, index) => (
           <div key={index} className="w-full md:w-1/2 lg:w-1/3">
