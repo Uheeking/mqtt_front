@@ -26,10 +26,15 @@ export default function Home() {
             <LineChartComponent className="w-full aspect-[4/3]" title={chart.title} range={chart.range} data={chart.data} />
           </div>
         ))}
+        
       </main>
+<<<<<<< HEAD
       <Link href="/device" legacyBehavior>
         <a className="px-4 py-2 mb-4 bg-green-500 text-white rounded">디바이스 등록</a>
       </Link>
+=======
+
+>>>>>>> ddf3ce1bc4c3695094e361189522b6203da12c81
     </div>
   );
 }
