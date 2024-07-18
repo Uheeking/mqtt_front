@@ -55,6 +55,7 @@ const ChartStyle = ({
   if (!colorConfig.length) {
     return null
   }
+  
 
   return (
     (<style

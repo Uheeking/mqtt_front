@@ -39,6 +39,7 @@ const CardContent = React.forwardRef(({ className, ...props }, ref) => (
 ))
 CardContent.displayName = "CardContent"
 
+
 const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}

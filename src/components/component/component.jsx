@@ -6,6 +6,7 @@
 import { CartesianGrid, XAxis, Line, LineChart } from "recharts"
 import { ChartTooltipContent, ChartTooltip, ChartContainer } from "@/components/ui/chart"
 
+
 export function Component() {
   return (
     (<div className="flex flex-col items-center w-full min-h-screen p-4">
@@ -29,6 +30,7 @@ export function Component() {
     </div>)
   );
 }
+
 
 function LinechartChart(props) {
   return (
