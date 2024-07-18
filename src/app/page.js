@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CartesianGrid, XAxis, YAxis, Line, LineChart, Tooltip } from "recharts";
 import { ChartTooltipContent, ChartTooltip, ChartContainer } from "@/components/ui/chart";
 
+
 export default function Home() {
   // Updated chart details with measurement ranges and specific data for each chart
   const chartDetails = [

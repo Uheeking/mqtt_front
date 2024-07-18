@@ -56,6 +56,7 @@ const ChartStyle = ({
     return null
   }
 
+  
   return (
     (<style
       dangerouslySetInnerHTML={{
