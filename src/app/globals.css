@@ -1,12 +1,6 @@
-<<<<<<< HEAD
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
-=======
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
->>>>>>> ddf3ce1bc4c3695094e361189522b6203da12c81
 
 
 @layer base {
