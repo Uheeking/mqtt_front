@@ -3,16 +3,16 @@ const db = require('./database');
 
 async function getDevice() {
   try {
-    const query = 'SELECT * FROM test';
+    const query = 'SELECT * FROM test order by id DESC';
     const result = await db.query(query);
     const packetResults = JSON.parse(JSON.stringify(result));
 
     console.log('All : getDevice', packetResults.length); // Print all device (optional)
 
     if (packetResults.length > 0) {
-      const lastDevice = packetResults[packetResults.length - 1];
+      // const lastDevice = packetResults[packetResults.length - 1];
       // console.log('Last Device:', lastDevice);
-      return lastDevice;
+      return packetResults;
     } else {
       console.log('No device found.');
       return [];

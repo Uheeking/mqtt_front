@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { getDevice, postcreateDevice, deleteDevice } = require('./querydb');
+const { getDevice, postcreateDevice, deleteDevice } = require('./db/querydb');
 require("dotenv").config();
 const PORT = process.env.PORT || 3002;
 
@@ -58,6 +58,6 @@ app.delete("/deleteDevice", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log("Server ready on port ", PORT));
+app.listen(3002, () => console.log("Server ready on port ", PORT));
 
 module.exports = app;
