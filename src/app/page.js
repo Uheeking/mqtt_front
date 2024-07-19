@@ -20,7 +20,7 @@ export default function Home() {
       <header className="w-full py-4 text-center border-b">
         <h1 className="text-xl font-bold">실내 모니터링</h1>
         <Link href="/device" legacyBehavior>
-          <a className="px-4 py-2 mb-4 bg-green-500 text-white rounded">디바이스 등록</a>
+          <a className="px-4 py-2 mb-4 bg-green-500 text-black rounded">디바이스 등록</a>
         </Link>
       </header>
       <main className="flex flex-wrap justify-center w-full gap-4 mt-4">
