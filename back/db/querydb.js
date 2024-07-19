@@ -39,8 +39,8 @@ async function postcreateDevice(text) {
 
 async function deleteDevice(id) {
   try {
-    const result = await db.query('DELETE FROM device WHERE id = $1 RETURNING *', [id]);
-    return result.rows[0];
+    const result = await db.query('DELETE FROM test WHERE id = ?', [id]);
+    return result;
   } catch (error) {
     throw new Error('Error deleting user: ' + error.message);
   }

@@ -49,9 +49,11 @@ app.post("/postcreateDevice", async (req, res) => {
     }
 });
 
-app.delete("/deleteDevice", async (req, res) => {
+app.delete("/deleteDevice/:id", async (req, res) => {
     try {
-        const result = await deleteDevice();
+        console.log(req.params.id);
+        const id = req.params.id;
+        const result = await deleteDevice(id);
         res.json(result);
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
