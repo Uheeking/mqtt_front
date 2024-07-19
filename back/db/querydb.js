@@ -1,36 +1,35 @@
-// Example usage in another file
+// get, post method about db
+const db = require('./database'); 
 
-const db = require('./database'); // Adjust the path as needed
-
-async function getUsers() {
+async function getDevice() {
   try {
     const query = 'SELECT * FROM test';
     const result = await db.query(query);
     const packetResults = JSON.parse(JSON.stringify(result));
 
-    console.log('All Users:', packetResults.length); // Print all users (optional)
+    console.log('All : getDevice', packetResults.length); // Print all device (optional)
 
     if (packetResults.length > 0) {
-      const lastUser = packetResults[packetResults.length - 1];
-      // console.log('Last User:', lastUser);
-      return lastUser;
+      const lastDevice = packetResults[packetResults.length - 1];
+      // console.log('Last Device:', lastDevice);
+      return lastDevice;
     } else {
-      console.log('No users found.');
+      console.log('No device found.');
       return [];
     }
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching device:', error);
     throw error;
   }
 }
 
-async function createUser(text) {
+async function postcreateDevice(text) {
   try {
-    const sql = 'INSERT INTO test (text) VALUES (?)';
+    const sql = 'INSERT INTO test (name, type, macAddress) VALUES (?, "sensor", ?)';
     const values = [text];
     const result = await db.query(sql, values);
 
-    console.log('User created successfully:', result);
+    console.log('Device created successfully:', result);
     return result.insertId; // Return the ID of the newly inserted user
   } catch (error) {
     console.error('Error creating user:', error);
@@ -38,8 +37,18 @@ async function createUser(text) {
   }
 }
 
+async function deleteDevice(id) {
+  try {
+    const result = await db.query('DELETE FROM device WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0];
+  } catch (error) {
+    throw new Error('Error deleting user: ' + error.message);
+  }
+}
+
 
 module.exports = {
-  createUser,
-  getUsers
+  getDevice,
+  postcreateDevice,
+  deleteDevice,
 };

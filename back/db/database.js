@@ -1,7 +1,7 @@
+// connection db
 const mysql = require('mysql');
 const DB = require("./db.json")
 
-// Configure the PostgreSQL connection
 const pool = mysql.createPool(DB);
 
 // Export the pool instance for querying

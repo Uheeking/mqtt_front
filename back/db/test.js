@@ -1,5 +1,4 @@
-// app.js (or any other file)
-
+// db connection test and print db query
 const { createUser, getUsers } = require('./querydb'); // Adjust the path as needed
 
 async function runExample() {
@@ -18,4 +17,6 @@ async function runExample() {
 }
 
 // Call the example function
-runExample();
+module.exports = {
+  runExample,
+}
