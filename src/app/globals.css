@@ -2,6 +2,10 @@
   @tailwind components;
   @tailwind utilities;
 
+  .isActive {
+    font-weight: bold;
+    background-color: rgb(218, 217, 217);
+  }
 
 @layer base {
   :root {

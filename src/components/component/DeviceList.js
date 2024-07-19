@@ -15,17 +15,10 @@ const DeviceList = () => {
 
   useEffect(() => {
     axios
-      .get(`${BACKURL}/getDevice`)
+      .get(`${BACKURL}/getDevice`, { cache: 'no-store' })
       .then((response) => {
         const data = response.data;
-        console.log(data);const handleDelete = async (deviceId) => {
-          try {
-            await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
-            setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
-          } catch (error) {
-            console.error("Error deleting device:", error);
-          }
-        };
+        console.log(data);
         setDevices(data)
       })
       .catch((error) => {
@@ -37,6 +30,7 @@ const DeviceList = () => {
     try {
       await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
       setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
+      alert('기기가 삭제되었습니다. ')
     } catch (error) {
       console.error("Error deleting device:", error);
     }
