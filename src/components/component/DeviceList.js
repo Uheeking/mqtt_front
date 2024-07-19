@@ -3,23 +3,44 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "@/components/ui/pagination"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb";
+import usePagination from './pagination';
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 const DeviceList = () => {
   const [devices, setDevices] = useState([]);
+  const itemsPerPage = 10;
+  const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(devices, itemsPerPage);
+
   useEffect(() => {
     axios
       .get(`${BACKURL}/getDevice`)
       .then((response) => {
         const data = response.data;
-        console.log(data);
+        console.log(data);const handleDelete = async (deviceId) => {
+          try {
+            await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
+            setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
+          } catch (error) {
+            console.error("Error deleting device:", error);
+          }
+        };
         setDevices(data)
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
+  const handleDelete = async (deviceId) => {
+    try {
+      await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
+      setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
+    } catch (error) {
+      console.error("Error deleting device:", error);
+    }
+  };
 
   return (
     <div className="grid gap-4 w-full">
@@ -39,8 +60,8 @@ const DeviceList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {devices.map((device, index) => (
-                <TableRow key={index}>
+              {currentData().map((device) => (
+                <TableRow key={device.id}>
                   <TableCell className="hidden sm:table-cell">{device.id}</TableCell>
                   <TableCell>
                     <div className='flex'>
@@ -55,7 +76,7 @@ const DeviceList = () => {
                   <TableCell className="hidden sm:table-cell">{device.registrationDate}</TableCell>
                   <TableCell className="text-right">
                     <button
-                      onClick={() => onDelete(index)}
+                      onClick={() => handleDelete(device.id)}
                       className="px-4 py-2 bg-black text-white rounded-lg"
                     >
                       장치 삭제
@@ -65,6 +86,28 @@ const DeviceList = () => {
               ))}
             </TableBody>
           </Table>
+          <div className="flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious href="#" onClick={prevPage} disabled={currentPage === 1} />
+                </PaginationItem>
+                {Array.from({ length: maxPage }, (_, index) => (
+                  <PaginationItem>
+                    <PaginationLink href="#" key={index}
+                      onClick={() => jumpToPage(index + 1)}
+                      className={currentPage === index + 1 ? 'isActive' : ''}
+                      >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem onClick={nextPage} disabled={currentPage === maxPage}>
+                  <PaginationNext href="#" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         </CardContent>
       </Card>
     </div>
