@@ -14,13 +14,12 @@ export default function Home() {
     { title: "조도측정", range: "0~200K Lux, 14%", data: generateData(0, 200000, 6) },
   ];
 
-
   return (
     <div className="flex flex-col items-center w-full min-h-screen p-4">
-      <header className="w-full py-4 text-center border-b">
-        <h1 className="text-xl font-bold">실내 모니터링</h1>
+      <header className="w-full py-4 border-b flex items-center justify-between lg:justify-center px-4 relative">
+        <h1 className="text-xl font-bold truncate">실내 모니터링</h1>
         <Link href="/device" legacyBehavior>
-          <a className="px-4 py-2 mb-4 bg-green-500 text-black rounded">디바이스 등록</a>
+          <a className="px-4 py-2 bg-black text-white rounded-lg absolute right-1">디바이스 등록</a>
         </Link>
       </header>
       <main className="flex flex-wrap justify-center w-full gap-4 mt-4">
@@ -29,9 +28,8 @@ export default function Home() {
             <LineChartComponent className="w-full aspect-[4/3]" title={chart.title} range={chart.range} data={chart.data} />
           </div>
         ))}
-
       </main>
-    </div >
+    </div>
   );
 }
 
