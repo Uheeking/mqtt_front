@@ -10,8 +10,6 @@ async function getDevice() {
     console.log('All : getDevice', packetResults.length); // Print all device (optional)
 
     if (packetResults.length > 0) {
-      // const lastDevice = packetResults[packetResults.length - 1];
-      // console.log('Last Device:', lastDevice);
       return packetResults;
     } else {
       console.log('No device found.');
@@ -23,14 +21,15 @@ async function getDevice() {
   }
 }
 
-async function postcreateDevice(text) {
+async function postcreateDevice(name, macAddress) {
+  console.log('querydb',name, macAddress);
   try {
     const sql = 'INSERT INTO test (name, type, macAddress) VALUES (?, "sensor", ?)';
-    const values = [text];
+    const values = [name, macAddress];
     const result = await db.query(sql, values);
 
     console.log('Device created successfully:', result);
-    return result.insertId; // Return the ID of the newly inserted user
+    return result; // Return the ID of the newly inserted user
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;

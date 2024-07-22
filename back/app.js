@@ -39,10 +39,9 @@ app.get("/getDevice", async (req, res) => {
 
 app.post("/postcreateDevice", async (req, res) => {
     try {
-        //req.body
-        //const name = 'reo';
-        console.log(req.body);
-        const result = await postcreateDevice();
+        const name = req.body.name;
+        const macAddress = req.body.macAddress;
+        const result = await postcreateDevice(name, macAddress);
         res.json(result);
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
@@ -60,6 +59,6 @@ app.delete("/deleteDevice/:id", async (req, res) => {
     }
 });
 
-app.listen(3002, () => console.log("Server ready on port ", PORT));
+app.listen(PORT, () => console.log("Server ready on port ", PORT));
 
 module.exports = app;
