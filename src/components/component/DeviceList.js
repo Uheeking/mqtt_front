@@ -1,36 +1,33 @@
 // components/DeviceList.js
-import React, { useState, useEffect } from 'react';
-import axios from "axios";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "@/components/ui/pagination"
-import { TbDeviceDesktopAnalytics } from "react-icons/tb";
+import React from 'react';
+import axios from 'axios';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from '@/components/ui/pagination';
+import { TbDeviceDesktopAnalytics } from 'react-icons/tb';
 import usePagination from './pagination';
+
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
-const DeviceList = () => {
-  const [devices, setDevices] = useState([]);
+// Function to convert timestamp to Korean time and format it
+const formatKoreanTime = (timestamp) => {
+  const date = new Date(timestamp);
+  // Add 9 hours to the date
+  date.setHours(date.getHours() + 9);
+  // Format the date to a readable string, e.g., "YYYY-MM-DD HH:MM:SS"
+  const formattedDate = date.toISOString().replace('T', ' ').replace(/\..+/, '');
+  return formattedDate;
+};
+
+const DeviceList = ({ devices, setDevices }) => {
   const itemsPerPage = 10;
   const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(devices, itemsPerPage);
-
-  useEffect(() => {
-    axios
-      .get(`${BACKURL}/getDevice`, { cache: 'no-store' })
-      .then((response) => {
-        const data = response.data;
-        console.log(data);
-        setDevices(data)
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
 
   const handleDelete = async (deviceId) => {
     try {
       await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
       setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
-      alert('기기가 삭제되었습니다. ')
+      alert('기기가 삭제되었습니다.');
     } catch (error) {
       console.error("Error deleting device:", error);
     }
@@ -64,10 +61,12 @@ const DeviceList = () => {
                       </div>
                       <div>
                         <div className="font-medium">{device.name}</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">{device.type}</div></div></div>
+                        <div className="hidden text-sm text-muted-foreground md:inline">{device.type}</div>
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">{device.macAddress}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{device.registrationDate}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{formatKoreanTime(device.registrationDate)}</TableCell>
                   <TableCell className="text-right">
                     <button
                       onClick={() => handleDelete(device.id)}
@@ -87,17 +86,18 @@ const DeviceList = () => {
                   <PaginationPrevious href="#" onClick={prevPage} disabled={currentPage === 1} />
                 </PaginationItem>
                 {Array.from({ length: maxPage }, (_, index) => (
-                  <PaginationItem>
-                    <PaginationLink href="#" key={index}
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      href="#"
                       onClick={() => jumpToPage(index + 1)}
                       className={currentPage === index + 1 ? 'isActive' : ''}
-                      >
+                    >
                       {index + 1}
                     </PaginationLink>
                   </PaginationItem>
                 ))}
-                <PaginationItem onClick={nextPage} disabled={currentPage === maxPage}>
-                  <PaginationNext href="#" />
+                <PaginationItem>
+                  <PaginationNext href="#" onClick={nextPage} disabled={currentPage === maxPage} />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
@@ -105,7 +105,6 @@ const DeviceList = () => {
         </CardContent>
       </Card>
     </div>
-
   );
 };
 
