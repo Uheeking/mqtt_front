@@ -1,6 +1,7 @@
-// components/DeviceList.js
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faSave, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from '@/components/ui/pagination';
@@ -12,24 +13,51 @@ const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 // Function to convert timestamp to Korean time and format it
 const formatKoreanTime = (timestamp) => {
   const date = new Date(timestamp);
-  // Add 9 hours to the date
   date.setHours(date.getHours() + 9);
-  // Format the date to a readable string, e.g., "YYYY-MM-DD HH:MM:SS"
   const formattedDate = date.toISOString().replace('T', ' ').replace(/\..+/, '');
   return formattedDate;
 };
-
+1
 const DeviceList = ({ devices, setDevices }) => {
+  const [editingDevice, setEditingDevice] = useState(null);
+  const [updatedName, setUpdatedName] = useState('');
+
   const itemsPerPage = 10;
   const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(devices, itemsPerPage);
 
   const handleDelete = async (deviceId) => {
     try {
-      await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
-      setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
-      alert('기기가 삭제되었습니다.');
+      const result = confirm('정말로 삭제하시겠습니까?')
+      if (result === true) {
+        await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
+        setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
+        alert('기기가 삭제되었습니다.');
+      } else {
+        alert('기기가 삭제되지 않았습니다. ')
+      }
+
     } catch (error) {
       console.error("Error deleting device:", error);
+    }
+  };
+
+  const handleEdit = (device) => {
+    setEditingDevice(device.id);
+    setUpdatedName(device.name);
+  };
+
+  const handleSave = async (deviceId) => {
+    try {
+      await axios.put(`${BACKURL}/putUpdateDevice/${deviceId}`, {
+        name: updatedName
+      });
+      setDevices((prevDevices) => prevDevices.map((device) =>
+        device.id === deviceId ? { ...device, name: updatedName } : device
+      ));
+      setEditingDevice(null);
+      alert('기기가 업데이트되었습니다.');
+    } catch (error) {
+      console.error("Error updating device:", error);
     }
   };
 
@@ -47,7 +75,7 @@ const DeviceList = ({ devices, setDevices }) => {
                 <TableHead>Name/Type</TableHead>
                 <TableHead className="hidden sm:table-cell">Mac Address</TableHead>
                 <TableHead className="hidden sm:table-cell">Registration Date</TableHead>
-                <TableHead className="text-right">DeleteDevice</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -60,7 +88,16 @@ const DeviceList = ({ devices, setDevices }) => {
                         <TbDeviceDesktopAnalytics className="h-6 w-6" />
                       </div>
                       <div>
-                        <div className="font-medium">{device.name}</div>
+                        {editingDevice === device.id ? (
+                          <input
+                            type="text"
+                            value={updatedName}
+                            onChange={(e) => setUpdatedName(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded"
+                          />
+                        ) : (
+                          <div className="font-medium">{device.name}</div>
+                        )}
                         <div className="hidden text-sm text-muted-foreground md:inline">{device.type}</div>
                       </div>
                     </div>
@@ -68,11 +105,26 @@ const DeviceList = ({ devices, setDevices }) => {
                   <TableCell className="hidden sm:table-cell">{device.macAddress}</TableCell>
                   <TableCell className="hidden sm:table-cell">{formatKoreanTime(device.registrationDate)}</TableCell>
                   <TableCell className="text-right">
+                    {editingDevice === device.id ? (
+                      <button
+                        onClick={() => handleSave(device.id)}
+                        className="px-4 py-2 bg-black text-white rounded-lg"
+                      >
+                        <FontAwesomeIcon icon={faSave} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEdit(device)}
+                        className="px-4 py-2 bg-black text-white rounded-lg"
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDelete(device.id)}
-                      className="px-4 py-2 bg-black text-white rounded-lg"
+                      className="px-4 py-2 bg-black text-white rounded-lg ml-2"
                     >
-                      장치 삭제
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </TableCell>
                 </TableRow>
