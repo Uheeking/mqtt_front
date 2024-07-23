@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { getDevice, postcreateDevice, deleteDevice } = require('./db/querydb');
+const { getDevice, postCreateDevice, putUpdateDevice, deleteDevice } = require('./db/querydb');
 require("dotenv").config();
 const PORT = process.env.PORT || 3002;
 
@@ -37,11 +37,22 @@ app.get("/getDevice", async (req, res) => {
     }
 });
 
-app.post("/postcreateDevice", async (req, res) => {
+app.post("/postCreateDevice", async (req, res) => {
     try {
         const name = req.body.name;
         const macAddress = req.body.macAddress;
-        const result = await postcreateDevice(name, macAddress);
+        const result = await postCreateDevice(name, macAddress);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+});
+
+app.put("/putUpdateDevice/:id", async (req, res) => {
+    try {
+        const name = req.body.name;
+        const id = req.params.id;
+        const result = await putUpdateDevice(name, id);
         res.json(result);
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });

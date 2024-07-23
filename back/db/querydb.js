@@ -36,6 +36,20 @@ async function postcreateDevice(name, macAddress) {
   }
 }
 
+async function putUpdateDevice(name, id) {
+  try {
+    const sql = 'UPDATE test SET name = ? WHERE id = ?';
+    const values = [name, id];
+    const result = await db.query(sql, values);
+
+    console.log('Device created successfully:', result);
+    return result; // Return the ID of the newly inserted user
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+}
+
 async function deleteDevice(id) {
   try {
     const result = await db.query('DELETE FROM test WHERE id = ?', [id]);
@@ -49,5 +63,6 @@ async function deleteDevice(id) {
 module.exports = {
   getDevice,
   postcreateDevice,
+  putUpdateDevice,
   deleteDevice,
 };
