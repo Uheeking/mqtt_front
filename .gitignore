@@ -39,5 +39,7 @@ next-env.d.ts
 .next
 node_modules
 ./node_modules
+
 back/db/db.json
 back/.env
+back/mqtt/mockData.json
