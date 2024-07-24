@@ -2,8 +2,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import DeviceForm from '@/components/component/DeviceForm';
-import DeviceList from '@/components/component/DeviceList';
+import DeviceForm from '@/components/device/DeviceForm';
+import DeviceList from '@/components/device/DeviceList';
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import axios from "axios";
 
