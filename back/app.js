@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { getDevice, postCreateDevice, putUpdateDevice, deleteDevice } = require('./db/querydb');
+const { getValues } = require('./mqtt/getMqttData');
 require("dotenv").config();
 const PORT = process.env.PORT || 3002;
 
@@ -64,6 +65,15 @@ app.delete("/deleteDevice/:id", async (req, res) => {
         console.log(req.params.id);
         const id = req.params.id;
         const result = await deleteDevice(id);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+});
+
+app.get("/getValues", async (req, res) => {
+    try {
+        const result = await getValues();
         res.json(result);
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
