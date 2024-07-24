@@ -2,17 +2,45 @@
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CartesianGrid, XAxis, YAxis, Line, LineChart, Tooltip } from "recharts";
-import { ChartTooltipContent, ChartTooltip, ChartContainer } from "@/components/ui/chart";
+import { ChartTooltipContent, ChartContainer } from "@/components/ui/chart";
+import WarningMessage from '@/components/chart/WarningMessage';
+import axios from "axios";
 import '@/app/globals.css';
+import { useEffect, useState } from 'react';
+
+const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 export default function Home() {
-  const chartDetails = [
-    { title: "CO2 측정", range: "400-5,000ppm, 해상도 1ppm", data: generateData(400, 5000, 6) },
-    { title: "미세먼지 측정", range: "OuE/ 1m-5000u/mt", data: generateData(1, 5000, 6) },
-    { title: "온도측정", range: "-10°C~60°C, ±1°C", data: generateData(-10, 60, 6) },
-    { title: "습도측정", range: "20%~85% RH, ±4%RH", data: generateData(20, 85, 6) },
-    { title: "조도측정", range: "0~200K Lux, 14%", data: generateData(0, 200000, 6) },
-  ];
+  const [chartDetails, setChartDetails] = useState([
+    { title: "CO2 측정", range: "400-5,000ppm, 해상도 1ppm", data: [] },
+    { title: "미세먼지 측정", range: "OuE/ 1m-5000u/mt", data: [] },
+    { title: "온도측정", range: "-10°C~60°C, ±1°C", data: [] },
+    { title: "습도측정", range: "20%~85% RH, ±4%RH", data: [] },
+    { title: "조도측정", range: "0~200K Lux, 14%", data: [] },
+  ]);
+
+  useEffect(() => {
+    const fetchData = () => {
+      axios
+        .get(`${BACKURL}/getValues`, { headers: { 'Cache-Control': 'no-cache' } })
+        .then((response) => {
+          const newData = response.data;
+          console.log(newData);
+
+          // Map the received data to the chart details
+          const updatedChartDetails = mapReceivedDataToChartDetails(newData);
+          setChartDetails(updatedChartDetails);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
+
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 5000); // Change this to 10000 for 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen p-4">
@@ -33,12 +61,21 @@ export default function Home() {
   );
 }
 
-// Helper function to generate sample data within a range
-function generateData(min, max, count) {
-  return Array.from({ length: count }, (_, i) => ({
-    index: i + 1,
-    value: Math.floor(Math.random() * (max - min + 1)) + min,
-  }));
+// Helper function to map received data to chart details
+function mapReceivedDataToChartDetails(receivedData) {
+  const co2Data = receivedData.map((item, index) => ({ index: index + 1, value: parseFloat(item.co2) }));
+  const dustData = receivedData.map((item, index) => ({ index: index + 1, value: parseFloat(item.dust) }));
+  const temperatureData = receivedData.map((item, index) => ({ index: index + 1, value: parseFloat(item.temperature) }));
+  const humidityData = receivedData.map((item, index) => ({ index: index + 1, value: parseFloat(item.humidity) }));
+  const illuminanceData = receivedData.map((item, index) => ({ index: index + 1, value: parseFloat(item.Illuminance) }));
+
+  return [
+    { title: "CO2 측정", range: "400-5,000ppm, 해상도 1ppm", data: co2Data },
+    { title: "미세먼지 측정", range: "OuE/ 1m-5000u/mt", data: dustData },
+    { title: "온도측정", range: "-10°C~60°C, ±1°C", data: temperatureData },
+    { title: "습도측정", range: "20%~85% RH, ±4%RH", data: humidityData },
+    { title: "조도측정", range: "0~200K Lux, 14%", data: illuminanceData },
+  ];
 }
 
 function LineChartComponent({ title, range, data, ...props }) {
