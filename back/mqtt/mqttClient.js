@@ -1,7 +1,6 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const mqtt = require('mqtt');
 const db = require('../db/database');
-// const generateMockData = require('./generateMockData');
 const MQTT_URL = process.env.MQTT_URL;
 
 const mqttBrokerUrl = `mqtt://${MQTT_URL}`;
@@ -18,8 +17,6 @@ mqttClient.on('connect', () => {
     }
   });
 });
-
-let processing = false;
 
 mqttClient.on('message', async (topic, message) => {
     // mosquitto_pub -h localhost -t hello -m '{"name": "new", "macAddress": "j1231231"}'
