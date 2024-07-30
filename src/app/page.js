@@ -3,14 +3,15 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CartesianGrid, XAxis, YAxis, Line, LineChart, Tooltip } from "recharts";
 import { ChartTooltipContent, ChartContainer } from "@/components/ui/chart";
-import WarningMessage from '@/components/chart/WarningMessage';
 import axios from "axios";
 import '@/app/globals.css';
 import { useEffect, useState } from 'react';
+import WarningMessage from "@/components/chart/WarningMessage"
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 export default function Home() {
+  const [data, setData] = useState([]);
   const [chartDetails, setChartDetails] = useState([
     { title: "CO2 측정", range: "400-5,000ppm, 해상도 1ppm", data: [] },
     { title: "미세먼지 측정", range: "OuE/ 1m-5000u/mt", data: [] },
@@ -25,11 +26,13 @@ export default function Home() {
         .get(`${BACKURL}/getValues`, { headers: { 'Cache-Control': 'no-cache' } })
         .then((response) => {
           const newData = response.data;
-          console.log(newData);
+          // console.log(newData);
 
-          // Map the received data to the chart details
           const updatedChartDetails = mapReceivedDataToChartDetails(newData);
           setChartDetails(updatedChartDetails);
+          setData(newData[0]); 
+
+          displayWarnings(newData[0]);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -44,6 +47,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen p-4">
+      {/* <ToastContainer className="mt-20"/> */}
       <header className="w-full py-4 border-b flex items-center justify-between lg:justify-center px-4 relative">
         <h1 className="text-xl font-bold truncate">실내 모니터링</h1>
         <Link href="/device" legacyBehavior>
@@ -57,6 +61,7 @@ export default function Home() {
           </div>
         ))}
       </main>
+      <WarningMessage data={data} />
     </div>
   );
 }

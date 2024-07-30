@@ -3,7 +3,7 @@ const db = require('./database');
 
 async function getDevice() {
   try {
-    const query = 'SELECT * FROM test order by id DESC';
+    const query = 'SELECT * FROM test order by id DESC limit 5';
     const result = await db.query(query);
     const packetResults = JSON.parse(JSON.stringify(result));
 
@@ -59,10 +59,36 @@ async function deleteDevice(id) {
   }
 }
 
+async function postLogWarnings(data) {
+  console.log(data);
+   try {
+        const promises = data.map(({ logName, log }) => {
+            const sql = 'INSERT INTO tests_log (logName, log) VALUES (?, ?)';
+            const values = [logName, log];
+            return new Promise((resolve, reject) => {
+                db.query(sql, values, (error, results) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(results);
+                });
+            });
+        });
+
+        const results = await Promise.all(promises);
+        console.log('Logs created successfully:', results);
+        res.status(200).send('Logs created successfully');
+    } catch (error) {
+        console.error('Error creating logs:', error);
+        res.status(500).send('Error creating logs');
+    }
+}
+
 
 module.exports = {
   getDevice,
   postcreateDevice,
   putUpdateDevice,
   deleteDevice,
+  postLogWarnings
 };
