@@ -36,7 +36,7 @@ const WarningMessage = ({ data }) => {
     const postLogWarnings = async (logs) => {
       try {
         console.log('Sending logs to backend:', logs);
-        // const result = await axios.post(`${BACKURL}/postLogWarnings`, logs);
+        // const result = await axios.post(`${BACKURL}/log/postLogWarnings`, logs);
         // console.log('Logs created successfully:', result.data);
         // return result.data;
       } catch (error) {
@@ -57,7 +57,7 @@ const WarningMessage = ({ data }) => {
 
   return (
     <div>
-      <ToastContainer className="mt-20" />
+      <ToastContainer />
       {logEntries.length === 0 && <p>All conditions are normal.</p>}
     </div>
   );

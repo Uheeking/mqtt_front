@@ -29,7 +29,7 @@ const DeviceList = ({ devices, setDevices }) => {
     try {
       const result = confirm('정말로 삭제하시겠습니까?')
       if (result === true) {
-        await axios.delete(`${BACKURL}/deleteDevice/${deviceId}`);
+        await axios.delete(`${BACKURL}/device/deleteDevice/${deviceId}`);
         setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
         alert('기기가 삭제되었습니다.');
       } else {
@@ -48,7 +48,7 @@ const DeviceList = ({ devices, setDevices }) => {
 
   const handleSave = async (deviceId) => {
     try {
-      await axios.put(`${BACKURL}/putUpdateDevice/${deviceId}`, {
+      await axios.put(`${BACKURL}/device/putUpdateDevice/${deviceId}`, {
         name: updatedName
       });
       setDevices((prevDevices) => prevDevices.map((device) =>
