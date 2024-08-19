@@ -21,11 +21,31 @@ async function getDevice() {
   }
 }
 
-async function postcreateDevice(name, macAddress) {
-  console.log('querydb', name, macAddress);
+async function getDeviceInfo() {
   try {
-    const sql = 'INSERT INTO test (name, type, macAddress) VALUES (?, "sensor", ?)';
-    const values = [name, macAddress];
+    const query = 'SELECT * FROM test_deviceinfo';
+    const result = await db.query(query);
+    const packetResults = JSON.parse(JSON.stringify(result));
+
+    console.log('All : getDevice', packetResults.length); // Print all device (optional)
+
+    if (packetResults.length > 0) {
+      return packetResults;
+    } else {
+      console.log('No device found.');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching device:', error);
+    throw error;
+  }
+}
+
+async function postCreateDevice(name) {
+  console.log('querydb', name);
+  try {
+    const sql = 'INSERT INTO test_deviceinfo (DEV_ID) VALUES (?)';
+    const values = [name];
     const result = await db.query(sql, values);
 
     console.log('Device created successfully:', result);
@@ -44,7 +64,7 @@ async function putUpdateDevice(name, id) {
 
     console.log('Device created successfully:', result);
     return result; // Return the ID of the newly inserted user
-  } catch (error) {
+  } catch (error) {0` `
     console.error('Error creating user:', error);
     throw error;
   }
@@ -61,7 +81,8 @@ async function deleteDevice(id) {
 
 module.exports = {
   getDevice,
-  postcreateDevice,
+  getDeviceInfo,
+  postCreateDevice,
   putUpdateDevice,
   deleteDevice,
 };

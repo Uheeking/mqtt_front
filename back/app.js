@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { getDevice, postCreateDevice, putUpdateDevice, deleteDevice, postLogWarnings } = require('./db/device/querydb');
+const { postLogWarnings } = require('./db/device/querydb');
 const { getValues } = require('./mqtt/getMqttData');
 require("dotenv").config();
 const PORT = process.env.PORT || 3002;

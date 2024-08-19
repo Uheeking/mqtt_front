@@ -1,10 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const { getDevice, postCreateDevice, putUpdateDevice, deleteDevice } = require('./querydb');
+const { getDevice, getDeviceInfo, postCreateDevice, putUpdateDevice, deleteDevice } = require('./querydb');
 
 router.get("/getDevice", async (req, res) => {
     try {
         const result = await getDevice();
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+});
+
+router.get("/getDeviceInfo", async (req, res) => {
+    try {
+        const result = await getDeviceInfo();
         res.json(result);
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
