@@ -69,7 +69,7 @@ const WarningMessage = ({ data }) => {
 
   return (
     <div>
-      <ToastContainer autoClose={2500} />
+      <ToastContainer />
       {logEntries.length === 0 && <p>All conditions are normal.</p>}
     </div>
   );

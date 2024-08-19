@@ -3,6 +3,7 @@ import { FiAlignLeft } from "react-icons/fi";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from '@/components/ui/pagination';
+import { FiAlignLeft } from "react-icons/fi";
 import usePagination from '@/components/device/pagination';
 
 // Function to convert timestamp to Korean time and format it
@@ -16,45 +17,14 @@ const formatKoreanTime = (timestamp) => {
 const LogList = ({ logList, setLogList }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const itemsPerPage = 10;
-
-  // Handle change event on the select menu
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
-  };
-
-  // Filter logs based on the selected category
-  const filteredLogs = selectedCategory
-    ? logList.filter(log => log.logName === selectedCategory)
-    : logList;
-
-    console.log(filteredLogs);
-    
-  const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(filteredLogs, itemsPerPage);
+  const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(logList, itemsPerPage);
 
   return (
     <div className="grid gap-4 w-full">
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center w-full">
-            <div>
-              <CardTitle>로그 목록</CardTitle>
-              <p className='text-sm text-muted-foreground'>최근 20개의 로그만 확인됩니다.</p>
-            </div>
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                className="p-2 border border-gray-300 rounded"
-              >
-                <option value="">Select Category</option>
-                <option value="TEMPR_1">TEMPR_1</option>
-                <option value="TEMPR_2">TEMPR_2</option>
-                <option value="W_PRES">W_PRES</option>
-                <option value="AC_CURR">AC_CURR</option>
-                <option value="WATER_PRESSURE">WATER_PRESSURE</option>
-              </select>
-            </div>
-          </div>
+          <CardTitle>로그 목록</CardTitle>
+          <p className='text-sm text-muted-foreground'>최근 20개의 로그만 확인됩니다. </p>
         </CardHeader>
         <CardContent className="grid gap-4">
           <Table>

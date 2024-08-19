@@ -1,16 +1,13 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import axios from "axios";
-import { mapReceivedDataToChartDetails } from '@/utils/mapData';
-import { FaSearch } from "react-icons/fa";
-
-const Sidebar = dynamic(() => import('@/components/chart/Sidebar'));
-const WarningMessage = dynamic(() => import("@/components/chart/WarningMessage"));
-const LineChartComponent = dynamic(() => import("@/components/chart/LineChartComponent"));
-const DeviceInfo = dynamic(() => import("@/components/chart/DeviceInfo"));
-const MainDeviceList = dynamic(() => import("@/components/device/MainDeviceList"));
-dynamic(() => import('@/app/globals.css'));
+import '@/app/globals.css';
+import { useEffect, useState } from 'react';
+import WarningMessage from "@/components/chart/WarningMessage";
+import Sidebar from "@/components/chart/Sidebar";
+import { mapReceivedDataToChartDetails } from "@/utils/mapData";
+import LineChartComponent from "@/components/chart/LineChartComponent";
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
@@ -48,60 +45,20 @@ export default function Home() {
       const newData = response.data.data;
       console.log(newData);
 
-      if (Array.isArray(newData) && newData.length > 0) {
-        setDeviceData(newData);
-        const updatedChartDetails = mapReceivedDataToChartDetails(newData);
-        setChartDetails(updatedChartDetails);
-      } else {
-        console.error('Unexpected data format:', newData);
-      }
-    } catch (error) {
-      console.error("Error fetching device data:", error);
-    }
-  };
+          const updatedChartDetails = mapReceivedDataToChartDetails(newData);
+          setChartDetails(updatedChartDetails);
+          setData(newData[0]);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
 
-  const fetchDeviceInfo = async (id) => {
-    try {
-      const response = await axios.get(`${BACKURL}/device/getDeviceInfo/${id}`, { headers: { 'Cache-Control': 'no-cache' } });
-      const infoData = response.data;
-      console.log('Device Info:', infoData.data[0]);
-      setDeviceInfo(infoData.data[0]);
-    } catch (error) {
-      console.error("Error fetching device info:", error);
-    }
-  };
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 10000); // Change this to 10000 for 10 seconds
 
-  const fetchDevices = async () => {
-    try {
-      const response = await axios.get(`${BACKURL}/device/getMainDeviceInfo`, { cache: 'no-store' });
-      const data = response.data;
-      setDevices(data.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const handleDeviceData = async (id) => {
-    console.log('Updating pointedId to:', id);
-    setPointedId(id);
-  };
-
-  const handleSearch = async () => {
-    if (!keyword || !category) return;
-
-    try {
-      const response = await axios.post(`${BACKURL}/device/postSearchDevices`, {
-        keyword: keyword, category : category
-      });
-      console.log(response.data);
-      
-      setSearchResults(response.data.devices);
-    } catch (error) {
-      console.error('Error searching devices:', error);
-    }
-  };
-
-
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex w-full min-h-screen">
@@ -134,14 +91,7 @@ export default function Home() {
           </div>
 
         </header>
-        {devices && <MainDeviceList devices={devices} onGraphClick={handleDeviceData} pointedId={pointedId} />}
-        <main className="flex flex-wrap justify-center w-full gap-4 my-4">
-          {searchResults?.length > 0 && (
-            <div className="w-full mt-4">
-              <h2 className="text-lg font-semibold mb-2">Search Results:</h2>
-              <DeviceList devices={searchResults} />
-            </div>
-          )}
+        <main className="flex flex-wrap justify-center w-full gap-4 mt-4">
           {chartDetails.map((chart, index) => (
             <div key={index} className="w-full md:w-1/2 lg:w-1/3 mx-4">
               <LineChartComponent className="w-full aspect-[4/3]" title={chart.title} range={chart.range} data={chart.data} />

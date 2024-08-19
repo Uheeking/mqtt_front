@@ -1,16 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {
-  getDevice,
-  getAllDevice,
-  getDeviceInfo,
-  getMainDeviceInfo,
-  postCreateDevice,
-  postSearchDevices,
-  putUpdateDevice,
-  deleteDevice,
-  getValues,
-} = require('./querydb');
+const { getDevice, postCreateDevice, putUpdateDevice, deleteDevice } = require('./querydb');
 
 const handleError = (res, error) => {
   console.error("API Error:", error); // Log the error for debugging
@@ -62,6 +52,15 @@ router.get("/getDeviceInfo/:id", async (req, res) => {
   } catch (error) {
     handleError(res, error);
   }
+});
+
+router.get("/getDeviceInfo", async (req, res) => {
+    try {
+        const result = await getDeviceInfo();
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
 });
 
 router.post("/postCreateDevice", async (req, res) => {

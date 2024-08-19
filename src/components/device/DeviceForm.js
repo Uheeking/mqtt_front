@@ -5,36 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 const DeviceForm = ({ fetchDevices }) => {
-  const [formValues, setFormValues] = useState({
-    deviceName: '',
-    macAddress: '',
-    valveOffTime: '',
-    valveOnTime: '',
-    valveCurrent: '',
-    valveTemperature: '',
-    emergencyTemperature: '',
-    minOperatingTemperature: '',
-    alarmLevel: '',
-    sensorIgnoreSetting: '',
-    transmissionInterval: '',
-    highPressureLimit: '',
-    lowPressureLimit: '',
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
-      [name]: value,
-    });
-  };
+  const [deviceName, setDeviceName] = useState('');
+  const [macAddress, setMacAddress] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post(`${BACKURL}/device/postCreateDevice`, formValues, {
-        headers: { 'Cache-Control': 'no-cache' },
-    })
+      .post(`${BACKURL}/postcreateDevice`, { name: deviceName, macAddress }, { headers: { 'Cache-Control': 'no-cache' } })
       .then((response) => {
         console.log(response.data);
         fetchDevices();
@@ -88,74 +65,25 @@ const DeviceForm = ({ fetchDevices }) => {
         </CardHeader>
         <CardContent className="grid gap-4">
           <form onSubmit={handleSubmit} className="p-4 bg-gray-100 rounded">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 groupBg">
-              {formFields.slice(0, 2).map((field) => (
-                <div key={field.name} className="mb-4">
-                  <label className="block text-sm font-bold mb-2">{field.label}</label>
-                  <input
-                    type="text"
-                    name={field.name}
-                    value={formValues[field.name]}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded radius"
-                    required
-                  />
-                </div>
-              ))}
+            <div className="mb-4">
+              <label className="block text-sm font-bold mb-2">맥주소</label>
+              <input
+                type="text"
+                value={macAddress}
+                onChange={(e) => setMacAddress(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+                required
+              />
             </div>
-
-            {/* Grouping fields into logical sections */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 groupBg">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">밸브 설정</h3>
-                {formFields.slice(2, 6).map((field) => (
-                  <div key={field.name} className="mb-4">
-                    <label className="block text-sm font-bold mb-2">{field.label}</label>
-                    <input
-                      type="text"
-                      name={field.name}
-                      value={formValues[field.name]}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 rounded radius"
-                      required
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold mb-2">온도 및 알람</h3>
-                {formFields.slice(6, 9).map((field) => (
-                  <div key={field.name} className="mb-4">
-                    <label className="block text-sm font-bold mb-2">{field.label}</label>
-                    <input
-                      type="text"
-                      name={field.name}
-                      value={formValues[field.name]}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 rounded radius"
-                      required
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* The rest of the form fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 groupBg">
-              {formFields.slice(9).map((field) => (
-                <div key={field.name} className="mb-4">
-                  <label className="block text-sm font-bold mb-2">{field.label}</label>
-                  <input
-                    type="text"
-                    name={field.name}
-                    value={formValues[field.name]}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded radius"
-                    required
-                  />
-                </div>
-              ))}
+            <div className="mb-4">
+              <label className="block text-sm font-bold mb-2">디바이스 이름</label>
+              <input
+                type="text"
+                value={deviceName}
+                onChange={(e) => setDeviceName(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+                required
+              />
             </div>
 
             <button type="submit" className="px-4 py-2 bg-black text-white rounded-lg w-full">

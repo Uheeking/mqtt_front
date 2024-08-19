@@ -1,11 +1,8 @@
 'use client'
-import dynamic from 'next/dynamic';
-import axios from "axios";
 import React, { useState, useEffect } from 'react';
-
-const LogList = dynamic(() => import('@/components/log/LogList'), { ssr: false });
-const Sidebar = dynamic(() => import("@/components/chart/Sidebar"), { ssr: false });
-
+import LogList from '@/components/log/LogList';
+import Sidebar from "@/components/chart/Sidebar";
+import axios from "axios";
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
@@ -17,7 +14,6 @@ export default function LogPage() {
       .get(`${BACKURL}/log/getLogList`, { cache: 'no-store' })
       .then((response) => {
         const data = response.data;
-        console.log(data);
         setLogList(data);
       })
       .catch((error) => {
