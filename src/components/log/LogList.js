@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faSave, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
+import { FiAlignLeft } from "react-icons/fi";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from '@/components/ui/pagination';
-import { FiAlignLeft } from "react-icons/fi";
-import usePagination from '@/components/device/pagination';
+const usePagination = dynamic(() => import("@/components/device/pagination"));
 
 // Function to convert timestamp to Korean time and format it
 const formatKoreanTime = (timestamp) => {
@@ -16,41 +14,72 @@ const formatKoreanTime = (timestamp) => {
 };
 
 const LogList = ({ logList, setLogList }) => {
+  const [selectedCategory, setSelectedCategory] = useState('');
   const itemsPerPage = 10;
-  const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(logList, itemsPerPage);
+
+  // Handle change event on the select menu
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  // Filter logs based on the selected category
+  const filteredLogs = selectedCategory
+    ? logList.filter(log => log.logName === selectedCategory)
+    : logList;
+
+  const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(filteredLogs, itemsPerPage);
 
   return (
     <div className="grid gap-4 w-full">
       <Card>
         <CardHeader>
-          <CardTitle>로그 목록</CardTitle>
-          <p className='text-sm text-muted-foreground'>최근 20개의 로그만 확인됩니다. </p>
+          <div className="flex justify-between items-center w-full">
+            <div>
+              <CardTitle>로그 목록</CardTitle>
+              <p className='text-sm text-muted-foreground'>최근 20개의 로그만 확인됩니다.</p>
+            </div>
+            <div>
+              <select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                className="p-2 border border-gray-300 rounded"
+              >
+                <option value="">Select Category</option>
+                <option value="co2">CO2</option>
+                <option value="temperature">Temperature</option>
+                <option value="humidity">Humidity</option>
+                <option value="illuminance">Illuminance</option>
+                <option value="dust">Dust</option>
+              </select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="grid gap-4">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="hidden sm:table-cell">Number</TableHead>
+                <TableHead>Number</TableHead>
                 <TableHead>LogName</TableHead>
-                <TableHead className="hidden sm:table-cell">Log</TableHead>
-                <TableHead className="hidden sm:table-cell">Creation Date</TableHead>
+                <TableHead>Log</TableHead>
+                <TableHead>Creation Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentData().map((log, i) => (
                 <TableRow key={log.id}>
-                  <TableCell className="hidden sm:table-cell">{i+1}</TableCell>
+                  <TableCell>{i + 1}</TableCell>
                   <TableCell>
                     <div className='flex'>
                       <div className="bg-secondary text-secondary-foreground rounded-full w-10 h-10 flex items-center justify-center mr-2">
-                        <FiAlignLeft  className="h-6 w-6" />
+                        <FiAlignLeft className="h-6 w-6" />
                       </div>
-                      <div className='py-2 '>
-                      {log.logName}</div>
+                      <div className='py-2'>
+                        {log.logName}
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">{log.log}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{formatKoreanTime(log.created_at)}</TableCell>
+                  <TableCell>{log.log}</TableCell>
+                  <TableCell>{formatKoreanTime(log.created_at)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

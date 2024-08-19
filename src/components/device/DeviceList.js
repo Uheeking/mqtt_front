@@ -1,23 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faSave, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from '@/components/ui/pagination';
 import { TbDeviceDesktopAnalytics } from 'react-icons/tb';
-import usePagination from './pagination';
+const usePagination = dynamic(() => import("@/components/device/pagination"));
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
-// Function to convert timestamp to Korean time and format it
-const formatKoreanTime = (timestamp) => {
-  const date = new Date(timestamp);
-  date.setHours(date.getHours() + 9);
-  const formattedDate = date.toISOString().replace('T', ' ').replace(/\..+/, '');
-  return formattedDate;
-};
-1
 const DeviceList = ({ devices, setDevices }) => {
   const [editingDevice, setEditingDevice] = useState(null);
   const [updatedName, setUpdatedName] = useState('');
@@ -71,23 +61,26 @@ const DeviceList = ({ devices, setDevices }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="hidden sm:table-cell">Number</TableHead>
-                <TableHead>Name/Type</TableHead>
-                <TableHead className="hidden sm:table-cell">Mac Address</TableHead>
-                <TableHead className="hidden sm:table-cell">Registration Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>번호</TableHead>
+                <TableHead>디바이스 ID</TableHead>
+                <TableHead className="text-center">동작 전류</TableHead>
+                <TableHead className="text-center">동작 온도</TableHead>
+                <TableHead className="text-center">비상 온도</TableHead>
+                <TableHead className="text-center">최소 작동 온도</TableHead>
+                <TableHead className="text-center">알람 레벨</TableHead>
+                <TableHead className="text-center">센서 무시 설정</TableHead>
+                <TableHead className="text-right">전송 주기(sec)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentData().map((device) => (
-                <TableRow key={device.id}>
-                  <TableCell className="hidden sm:table-cell">{device.id}</TableCell>
+                <TableRow key={device.ID}>
+                  <TableCell>{device.ID}</TableCell>
                   <TableCell>
                     <div className='flex'>
                       <div className="bg-secondary text-secondary-foreground rounded-full w-10 h-10 flex items-center justify-center mr-2">
                         <TbDeviceDesktopAnalytics className="h-6 w-6" />
                       </div>
-                      <div>
                         {editingDevice === device.id ? (
                           <input
                             type="text"
@@ -96,37 +89,17 @@ const DeviceList = ({ devices, setDevices }) => {
                             className="w-full p-2 border border-gray-300 rounded"
                           />
                         ) : (
-                          <div className="font-medium">{device.name}</div>
+                          <div className="font-medium py-3">{device.DEV_ID}</div>
                         )}
-                        <div className="hidden text-sm text-muted-foreground md:inline">{device.type}</div>
-                      </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">{device.macAddress}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{formatKoreanTime(device.registrationDate)}</TableCell>
-                  <TableCell className="text-right">
-                    {editingDevice === device.id ? (
-                      <button
-                        onClick={() => handleSave(device.id)}
-                        className="px-4 py-2 bg-black text-white rounded-lg"
-                      >
-                        <FontAwesomeIcon icon={faSave} />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(device)}
-                        className="px-4 py-2 bg-black text-white rounded-lg"
-                      >
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(device.id)}
-                      className="px-4 py-2 bg-black text-white rounded-lg ml-2"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </TableCell>
+                  <TableCell className="text-center">{device.CURR_THR}</TableCell>
+                  <TableCell className="text-center">{device.TEMPR_THR}</TableCell>
+                  <TableCell className="text-center">{device.TEMPR_OVR}</TableCell>
+                  <TableCell className="text-center">{device.TEMPR_MIN}</TableCell>
+                  <TableCell className="text-center">{device.ALARM_LVL}</TableCell>
+                  <TableCell className="text-center">{device.SEN_IGN}</TableCell>
+                  <TableCell className="text-right">{device.PERIOD}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -1,11 +1,10 @@
 // src/app/device/page.js
-'use client'
+"use client"
+import dynamic from 'next/dynamic';
+const DeviceForm = dynamic(() => import('@/components/device/DeviceForm'));
+const DeviceList = dynamic(() => import('@/components/device/DeviceList'));
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import DeviceForm from '@/components/device/DeviceForm';
-import DeviceList from '@/components/device/DeviceList';
-import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import Sidebar from "@/components/chart/Sidebar";
+const Sidebar = dynamic(() => import('@/components/chart/Sidebar'));
 import axios from "axios";
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
@@ -15,7 +14,7 @@ export default function DevicePage() {
 
   const fetchDevices = () => {
     axios
-      .get(`${BACKURL}/device/getDevice`, { cache: 'no-store' })
+      .get(`${BACKURL}/device/getDeviceInfo`, { cache: 'no-store' })
       .then((response) => {
         const data = response.data;
         console.log(data);

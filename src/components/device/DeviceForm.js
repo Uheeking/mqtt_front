@@ -1,4 +1,3 @@
-// components/DeviceForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -7,12 +6,11 @@ const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 const DeviceForm = ({ fetchDevices }) => {
   const [deviceName, setDeviceName] = useState('');
-  const [macAddress, setMacAddress] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post(`${BACKURL}/postcreateDevice`, { name: deviceName, macAddress }, { headers: { 'Cache-Control': 'no-cache' } })
+      .post(`${BACKURL}/device/postCreateDevice`, { name: deviceName }, { headers: { 'Cache-Control': 'no-cache' } })
       .then((response) => {
         const newDevice = response.data;
         console.log(newDevice);
@@ -34,16 +32,6 @@ const DeviceForm = ({ fetchDevices }) => {
         </CardHeader>
         <CardContent className="grid gap-4">
           <form onSubmit={handleSubmit} className="p-4 bg-gray-100 rounded">
-            <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">맥주소</label>
-              <input
-                type="text"
-                value={macAddress}
-                onChange={(e) => setMacAddress(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              />
-            </div>
             <div className="mb-4">
               <label className="block text-sm font-bold mb-2">디바이스 이름</label>
               <input

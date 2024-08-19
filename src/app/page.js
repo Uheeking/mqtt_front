@@ -1,13 +1,12 @@
 "use client";
-import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import dynamic from 'next/dynamic';
 import axios from "axios";
 import '@/app/globals.css';
 import { useEffect, useState } from 'react';
-import WarningMessage from "@/components/chart/WarningMessage";
-import Sidebar from "@/components/chart/Sidebar";
+const WarningMessage = dynamic(() => import("@/components/chart/WarningMessage"));
+const LineChartComponent = dynamic(() => import("@/components/chart/LineChartComponent"));
+const Sidebar = dynamic(() => import('@/components/chart/Sidebar'));
 import { mapReceivedDataToChartDetails } from "@/utils/mapData";
-import LineChartComponent from "@/components/chart/LineChartComponent";
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
@@ -37,7 +36,18 @@ export default function Home() {
           console.error("Error fetching data:", error);
         });
     };
-
+    const test = () => {
+      axios
+        .get(`${BACKURL}/`, { headers: { 'Cache-Control': 'no-cache' } })
+        .then((response) => {
+          const newData = response.data;
+          console.log(newData);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
+    test()
     fetchData(); // Initial fetch
     const interval = setInterval(fetchData, 10000); // Change this to 10000 for 10 seconds
 
@@ -51,9 +61,9 @@ export default function Home() {
         <Sidebar />
           <h1 className="text-xl font-bold truncate header-content">실내 모니터링</h1>
         </header>
-        <main className="flex flex-wrap justify-center w-full gap-4 mt-4">
+        <main className="flex flex-wrap justify-center w-full gap-4 my-4">
           {chartDetails.map((chart, index) => (
-            <div key={index} className="w-full md:w-1/2 lg:w-1/3">
+            <div key={index} className="w-full md:w-1/2 lg:w-1/3 mx-4">
               <LineChartComponent className="w-full aspect-[4/3]" title={chart.title} range={chart.range} data={chart.data} />
             </div>
           ))}
