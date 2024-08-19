@@ -2,7 +2,7 @@ const db = require('../db/database');
 
 async function getValues() {
     try {
-        const query = 'SELECT * FROM test order by id DESC limit 5';
+        const query = 'SELECT * FROM test_mqtt_connect order by DEV_ID DESC limit 5';
         const result = await db.query(query);
         const packetResults = JSON.parse(JSON.stringify(result));
 

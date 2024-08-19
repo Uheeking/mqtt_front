@@ -1,9 +1,11 @@
-// src/app/device/page.js
 'use client'
-import React, { useState, useEffect } from 'react';
-import LogList from '@/components/log/LogList';
-import Sidebar from "@/components/chart/Sidebar";
+import dynamic from 'next/dynamic';
 import axios from "axios";
+import React, { useState, useEffect } from 'react';
+
+const LogList = dynamic(() => import('@/components/log/LogList'), { ssr: false });
+const Sidebar = dynamic(() => import("@/components/chart/Sidebar"), { ssr: false });
+
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 

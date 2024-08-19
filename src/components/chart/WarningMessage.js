@@ -6,27 +6,39 @@ import axios from "axios";
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 const WarningMessage = ({ data }) => {
-  const { dust: fineDust, co2, temperature, humidity, Illuminance: illuminance } = data;
+  const { RUN_STAT, TEMPR_1: temperature1, TEMPR_2: temperature2, W_PRES: pressure, AC_CURR: current } = data;
   const [logEntries, setLogEntries] = useState([]);
 
-  useEffect(() => {
-    console.log('Data received:', data);
-    const newLogEntries = [];
+  const runStatDescriptions = {
+    0x04: 'Overheating detected!',
+    0x10: 'Valve stuck detected!',
+    0x20: 'Leakage detected!'
+  };
 
-    if (fineDust > 150) {
-      newLogEntries.push({ logName: 'fineDust', log: 'High levels of fine dust detected!' });
+  useEffect(() => {
+    // console.log('Data received:', data);
+    const newLogEntries = [];
+    
+    // Parse RUN_STAT bitmask and log conditions
+    const runStatValue = parseInt(RUN_STAT, 16);
+    Object.keys(runStatDescriptions).forEach(flag => {
+      if (runStatValue & flag) {
+        newLogEntries.push({ logName: `SEN_IGN_STAT`, log: runStatDescriptions[flag] });
+      }
+    });
+
+    // Additional checks for other conditions if needed
+    if (temperature1 < 0 || temperature1 > 35) {
+      newLogEntries.push({ logName: 'TEMPR_1', log: 'Temperature 1 is out of the safe range!' });
     }
-    if (co2 > 1000) {
-      newLogEntries.push({ logName: 'co2', log: 'High levels of CO2 detected!' });
+    if (temperature2 < 0 || temperature2 > 35) {
+      newLogEntries.push({ logName: 'TEMPR_2', log: 'Temperature 2 is out of the safe range!' });
     }
-    if (temperature < 0 || temperature > 35) {
-      newLogEntries.push({ logName: 'temperature', log: 'Temperature is out of the safe range!' });
+    if (pressure < 20 || pressure > 120) {
+      newLogEntries.push({ logName: 'W_PRES', log: 'Water pressure is out of the safe range!' });
     }
-    if (humidity < 20 || humidity > 80) {
-      newLogEntries.push({ logName: 'humidity', log: 'Humidity is out of the safe range!' });
-    }
-    if (illuminance > 80000) {
-      newLogEntries.push({ logName: 'illuminance', log: 'High levels of illuminance detected!' });
+    if (current < 0 || current > 50) {
+      newLogEntries.push({ logName: 'AC_CURR', log: 'Current is out of the safe range!' });
     }
 
     setLogEntries(newLogEntries);
@@ -36,9 +48,9 @@ const WarningMessage = ({ data }) => {
     const postLogWarnings = async (logs) => {
       try {
         console.log('Sending logs to backend:', logs);
-        // const result = await axios.post(`${BACKURL}/log/postLogWarnings`, logs);
-        // console.log('Logs created successfully:', result.data);
-        // return result.data;
+        const result = await axios.post(`${BACKURL}/log/postLogWarnings`, logs);
+        console.log('Logs created successfully:', result.data);
+        return result.data;
       } catch (error) {
         console.error('Error creating logs:', error);
         throw error;
@@ -57,7 +69,7 @@ const WarningMessage = ({ data }) => {
 
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer autoClose={2500} />
       {logEntries.length === 0 && <p>All conditions are normal.</p>}
     </div>
   );

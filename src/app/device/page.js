@@ -1,33 +1,43 @@
-// src/app/device/page.js
-'use client'
+"use client";
+
+import dynamic from 'next/dynamic';
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import DeviceForm from '@/components/device/DeviceForm';
-import DeviceList from '@/components/device/DeviceList';
-import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import Sidebar from "@/components/chart/Sidebar";
 import axios from "axios";
+
+const DeviceForm = dynamic(() => import('@/components/device/DeviceForm'));
+const UpdateDeviceList = dynamic(() => import('@/components/device/UpdateDeviceList'));
+const Sidebar = dynamic(() => import('@/components/chart/Sidebar'), { ssr: false });
 
 const BACKURL = process.env.NEXT_PUBLIC_BACKURL;
 
 export default function DevicePage() {
   const [devices, setDevices] = useState([]);
+  const [mainDevices, setMainDevices] = useState([]);
 
   const fetchDevices = () => {
     axios
-      .get(`${BACKURL}/device/getDevice`, { cache: 'no-store' })
+      .get(`${BACKURL}/device/getAllDevice`, { cache: 'no-store' })
       .then((response) => {
         const data = response.data;
-        console.log(data);
-        setDevices(data);
+        setDevices(data.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   };
 
+  const fetchMainDevices = async () => {
+    try {
+      const response = await axios.get(`${BACKURL}/device/getMainDeviceInfo`, { cache: 'no-store' });
+      setMainDevices(response.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
     fetchDevices();
+    fetchMainDevices();
   }, []);
 
   return (
@@ -38,7 +48,7 @@ export default function DevicePage() {
       </header>
       <main className="flex flex-col items-center w-full mt-4 p-4">
         <DeviceForm fetchDevices={fetchDevices} />
-        <DeviceList devices={devices} setDevices={setDevices} />
+        <UpdateDeviceList devices={mainDevices} onUpdateClick={fetchMainDevices} setDevices={setMainDevices} />
       </main>
     </div>
   );

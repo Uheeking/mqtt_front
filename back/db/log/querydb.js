@@ -3,7 +3,7 @@ const db = require('../database');
 
 async function getLogList() {
     try {
-        const query = 'SELECT * FROM tests_log order by id DESC limit 20';
+        const query = 'SELECT * FROM test_mqtt_connect_log order by id DESC limit 20';
         const result = await db.query(query);
         const packetResults = JSON.parse(JSON.stringify(result));
 
@@ -25,7 +25,7 @@ async function postLogWarnings(data) {
     console.log(data);
     try {
         const promises = data.map(({ logName, log }) => {
-            const sql = 'INSERT INTO tests_log (logName, log) VALUES (?, ?)';
+            const sql = 'INSERT INTO test_mqtt_connect_log (logName, log) VALUES (?, ?)';
             const values = [logName, log];
             return new Promise((resolve, reject) => {
                 db.query(sql, values, (error, results) => {

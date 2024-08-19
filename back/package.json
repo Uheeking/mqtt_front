@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "supervisor app.js",
+    "start": "set PORT=3001 && supervisor app.js",
     "mock": "node mqtt/generateMockData.js",
-    "subscribe": "node mqtt/mqttClient.js"
+    "subscribe": "supervisor mqtt/mqttClient.js"
   },
   "keywords": [],
   "author": "",

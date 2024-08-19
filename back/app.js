@@ -2,8 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { getDevice, postCreateDevice, putUpdateDevice, deleteDevice, postLogWarnings } = require('./db/device/querydb');
+const { postLogWarnings } = require('./db/device/querydb');
 const { getValues } = require('./mqtt/getMqttData');
+const db = require('./db/database');
 require("dotenv").config();
 const PORT = process.env.PORT || 3002;
 
@@ -30,6 +31,19 @@ app.use(
 app.get("/", (req, res) => res.send("Express on Vercel"));
 app.use("/device", require("./db/device/api"));
 app.use("/log", require("./db/log/api"));
+
+app.get('/getList', async (req, res) => {
+    try {
+        const query = 'SELECT * FROM test_deviceinfo';
+        const result = await db.query(query);
+        const packetResults = JSON.parse(JSON.stringify(result));
+        console.log('All : getDevice', packetResults)
+        res.json(result);
+    } catch (err) {
+        console.error('Error fetching data from database', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.get("/getValues", async (req, res) => {
     try {

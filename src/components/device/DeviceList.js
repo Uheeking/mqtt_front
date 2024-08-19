@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faSave, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
+import dynamic from 'next/dynamic';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from '@/components/ui/pagination';
@@ -17,49 +16,13 @@ const formatKoreanTime = (timestamp) => {
   const formattedDate = date.toISOString().replace('T', ' ').replace(/\..+/, '');
   return formattedDate;
 };
-1
+
 const DeviceList = ({ devices, setDevices }) => {
   const [editingDevice, setEditingDevice] = useState(null);
   const [updatedName, setUpdatedName] = useState('');
 
   const itemsPerPage = 10;
   const { nextPage, prevPage, jumpToPage, currentData, currentPage, maxPage } = usePagination(devices, itemsPerPage);
-
-  const handleDelete = async (deviceId) => {
-    try {
-      const result = confirm('정말로 삭제하시겠습니까?')
-      if (result === true) {
-        await axios.delete(`${BACKURL}/device/deleteDevice/${deviceId}`);
-        setDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
-        alert('기기가 삭제되었습니다.');
-      } else {
-        alert('기기가 삭제되지 않았습니다. ')
-      }
-
-    } catch (error) {
-      console.error("Error deleting device:", error);
-    }
-  };
-
-  const handleEdit = (device) => {
-    setEditingDevice(device.id);
-    setUpdatedName(device.name);
-  };
-
-  const handleSave = async (deviceId) => {
-    try {
-      await axios.put(`${BACKURL}/device/putUpdateDevice/${deviceId}`, {
-        name: updatedName
-      });
-      setDevices((prevDevices) => prevDevices.map((device) =>
-        device.id === deviceId ? { ...device, name: updatedName } : device
-      ));
-      setEditingDevice(null);
-      alert('기기가 업데이트되었습니다.');
-    } catch (error) {
-      console.error("Error updating device:", error);
-    }
-  };
 
   return (
     <div className="grid gap-4 w-full">
@@ -71,24 +34,28 @@ const DeviceList = ({ devices, setDevices }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="hidden sm:table-cell">Number</TableHead>
-                <TableHead>Name/Type</TableHead>
-                <TableHead className="hidden sm:table-cell">Mac Address</TableHead>
-                <TableHead className="hidden sm:table-cell">Registration Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>번호</TableHead> {/* Index column header */}
+                <TableHead>메인 디바이스 이름</TableHead>
+                <TableHead>디바이스 이름</TableHead>
+                <TableHead>현재 알람 상태</TableHead>
+                <TableHead>밸브 상태</TableHead>
+                <TableHead>밸브 고착</TableHead>
+                <TableHead>밸브 누수</TableHead>
+                <TableHead className="text-right">알람 무시 상태</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentData().map((device) => (
-                <TableRow key={device.id}>
-                  <TableCell className="hidden sm:table-cell">{device.id}</TableCell>
+              {currentData().map((device, index) => (
+                <TableRow key={device.DEV_ID}> 
+                  <TableCell>{index + 1}</TableCell> 
+                  <TableCell>{device.MAIN_DEVICE}</TableCell>
                   <TableCell>
                     <div className='flex'>
                       <div className="bg-secondary text-secondary-foreground rounded-full w-10 h-10 flex items-center justify-center mr-2">
                         <TbDeviceDesktopAnalytics className="h-6 w-6" />
                       </div>
                       <div>
-                        {editingDevice === device.id ? (
+                        {editingDevice === device.DEV_ID ? (
                           <input
                             type="text"
                             value={updatedName}
@@ -96,37 +63,20 @@ const DeviceList = ({ devices, setDevices }) => {
                             className="w-full p-2 border border-gray-300 rounded"
                           />
                         ) : (
-                          <div className="font-medium">{device.name}</div>
+                          <div className="font-medium">
+                            {device.DEV_ID}
+                            <p className='text-muted-foreground'>sensor</p>
+                          </div>
                         )}
                         <div className="hidden text-sm text-muted-foreground md:inline">{device.type}</div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">{device.macAddress}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{formatKoreanTime(device.registrationDate)}</TableCell>
-                  <TableCell className="text-right">
-                    {editingDevice === device.id ? (
-                      <button
-                        onClick={() => handleSave(device.id)}
-                        className="px-4 py-2 bg-black text-white rounded-lg"
-                      >
-                        <FontAwesomeIcon icon={faSave} />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(device)}
-                        className="px-4 py-2 bg-black text-white rounded-lg"
-                      >
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(device.id)}
-                      className="px-4 py-2 bg-black text-white rounded-lg ml-2"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </TableCell>
+                  <TableCell>{device.ALARM_STAT}</TableCell>
+                  <TableCell>{device.V_STAT}</TableCell>
+                  <TableCell>{device.V_STUCK}</TableCell>
+                  <TableCell>{device.V_LEAK}</TableCell>
+                  <TableCell className="text-right">{device.SEN_IGN_STAT}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
